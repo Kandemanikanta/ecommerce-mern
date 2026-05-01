@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
@@ -122,18 +122,28 @@ const Checkout = () => {
     }
   };
 
+  useEffect(() => {
+    if (cart.items?.length === 0 && !createdOrderId) {
+      navigate("/cart");
+    }
+  }, [cart.items, createdOrderId, navigate]);
+
+  useEffect(() => {
+    if (!window.Razorpay && paymentMethod === "razorpay") {
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.async = true;
+      document.body.appendChild(script);
+      return () => document.body.removeChild(script);
+    }
+  }, [paymentMethod]);
+
   if (cart.items?.length === 0 && !createdOrderId) {
-    navigate("/cart");
     return null;
   }
 
   return (
     <div style={{ paddingTop: 90, minHeight: "100vh" }}>
-      {/* Razorpay SDK */}
-      {!window.Razorpay && (
-        <script src="https://checkout.razorpay.com/v1/checkout.js" />
-      )}
-
       <div style={{ background: "var(--charcoal)", padding: "2.5rem 0" }}>
         <div className="container">
           <h1 style={{ color: "var(--white)" }}>Checkout</h1>

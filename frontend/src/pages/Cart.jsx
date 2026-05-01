@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 
+const getProductId = (product) => (typeof product === "object" && product !== null) ? product._id : product;
+
 const Cart = () => {
   const { cart, cartTotal, removeFromCart, addToCart } = useCart();
   const items = cart.items || [];
@@ -36,19 +38,21 @@ const Cart = () => {
       <div className="container" style={{ padding: "2.5rem 1.5rem", display: "grid", gridTemplateColumns: "1fr 360px", gap: "2.5rem", alignItems: "start" }}>
         {/* Cart items */}
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-          {items.map(item => (
-            <div key={item.product} style={{
+          {items.map(item => {
+            const productId = getProductId(item.product);
+            return (
+            <div key={productId} style={{
               display: "grid", gridTemplateColumns: "100px 1fr auto",
               gap: "1.5rem", alignItems: "center",
               background: "var(--white)", borderRadius: "var(--radius-lg)", padding: "1.25rem",
               boxShadow: "var(--shadow-sm)",
             }}>
-              <Link to={`/products/${item.product}`}>
+              <Link to={`/products/${productId}`}>
                 <img src={item.image} alt={item.name} style={{ width: "100%", aspectRatio: "1/1", objectFit: "cover", borderRadius: "var(--radius-md)" }} />
               </Link>
 
               <div>
-                <Link to={`/products/${item.product}`}>
+                <Link to={`/products/${productId}`}>
                   <h3 style={{ fontSize: "1rem", marginBottom: ".25rem" }}>{item.name}</h3>
                 </Link>
                 <p style={{ fontSize: ".88rem", color: "var(--stone)" }}>₹{item.price.toLocaleString("en-IN")} each</p>
@@ -56,11 +60,11 @@ const Cart = () => {
                 {/* Qty controls */}
                 <div style={{ display: "flex", alignItems: "center", gap: ".5rem", marginTop: ".75rem" }}>
                   <div style={{ display: "flex", alignItems: "center", border: "1.5px solid var(--cream-dark)", borderRadius: "var(--radius-full)" }}>
-                    <button onClick={() => addToCart(item.product, Math.max(1, item.quantity - 1))} style={{ padding: ".35rem .75rem", color: "var(--stone)" }}>−</button>
+                    <button onClick={() => addToCart(productId, Math.max(1, item.quantity - 1))} style={{ padding: ".35rem .75rem", color: "var(--stone)" }}>−</button>
                     <span style={{ padding: ".35rem .6rem", fontWeight: 600, minWidth: 28, textAlign: "center" }}>{item.quantity}</span>
-                    <button onClick={() => addToCart(item.product, item.quantity + 1)} style={{ padding: ".35rem .75rem", color: "var(--stone)" }}>+</button>
+                    <button onClick={() => addToCart(productId, item.quantity + 1)} style={{ padding: ".35rem .75rem", color: "var(--stone)" }}>+</button>
                   </div>
-                  <button onClick={() => removeFromCart(item.product)} style={{ color: "var(--rust)", fontSize: ".82rem", fontWeight: 500 }}>Remove</button>
+                  <button onClick={() => removeFromCart(productId)} style={{ color: "var(--rust)", fontSize: ".82rem", fontWeight: 500 }}>Remove</button>
                 </div>
               </div>
 
@@ -70,7 +74,8 @@ const Cart = () => {
                 </p>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Summary */}
