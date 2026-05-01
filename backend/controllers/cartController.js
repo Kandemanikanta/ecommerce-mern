@@ -45,6 +45,7 @@ const addToCart = asyncHandler(async (req, res) => {
   }
 
   await cart.save();
+  await cart.populate("items.product", "name images stock");
   res.json(cart);
 });
 
@@ -59,6 +60,7 @@ const removeFromCart = asyncHandler(async (req, res) => {
 
   cart.items = cart.items.filter((i) => i.product.toString() !== req.params.productId);
   await cart.save();
+  await cart.populate("items.product", "name images stock");
   res.json(cart);
 });
 

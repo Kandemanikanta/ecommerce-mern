@@ -3,7 +3,6 @@ const mongoose = require("mongoose");
 const connectDB = require("./db");
 const Product = require("../models/Product");
 const User = require("../models/User");
-const bcrypt = require("bcryptjs");
 
 dotenv.config();
 connectDB();
@@ -120,21 +119,19 @@ const seedData = async () => {
     await Product.deleteMany();
     await User.deleteMany();
 
-    // Create admin user
-    const hashedPassword = await bcrypt.hash("admin123", 10);
+    // Create admin user (password hashed automatically by User model pre-save hook)
     await User.create({
       name: "Admin User",
       email: "admin@shop.com",
-      password: hashedPassword,
+      password: "admin123",
       role: "admin",
     });
 
-    // Create test user
-    const hashedPassword2 = await bcrypt.hash("user123", 10);
+    // Create test user (password hashed automatically by User model pre-save hook)
     await User.create({
       name: "Test User",
       email: "user@shop.com",
-      password: hashedPassword2,
+      password: "user123",
       role: "user",
     });
 
